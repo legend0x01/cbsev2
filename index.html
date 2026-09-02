@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="NCERT Notes for Classes 9, 10, 11, and 12 with interactive notes reader, instant PDF downloads, night light mode, and board exam summaries." />
+    <title>NCERT Notes — Make Study Better</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet" />
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            200: '#c7d2fe',
+                            300: '#a5b4fc',
+                            400: '#818cf8',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            800: '#3730a3',
+                            900: '#312e81',
+                        }
+                    },
+                    fontFamily: {
+                        heading: ['Outfit', 'sans-serif'],
+                        body: ['Plus Jakarta Sans', 'sans-serif'],
+                        code: ['Fira Code', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- jsPDF & html2canvas for Client-side PDF Generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+    <!-- Embedded Custom Stylesheet -->
+    <style>
+        :root {
+            --bg-main: #f8fafc;
+            --card-bg: rgba(255, 255, 255, 0.85);
+            --card-border: rgba(226, 232, 240, 0.85);
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --primary: #4f46e5;
+            --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #06b6d4 100%);
+            --reader-bg: #ffffff;
+            --glass-sheet: rgba(255, 255, 255, 0.95);
+        }
+
+        html.dark {
+            --bg-main: #090d16;
+            --card-bg: rgba(17, 24, 39, 0.78);
+            --card-border: rgba(51, 65, 85, 0.65);
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --primary: #818cf8;
+            --primary-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #22d3ee 100%);
+            --reader-bg: #0f172a;
+            --glass-sheet: rgba(15, 23, 42, 0.96);
+        }
+
+        /* Ambient Eye-Care Night Light Study Mode */
+        .night-light-overlay {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 99999;
+            background: rgba(245, 158, 11, 0);
+            mix-blend-mode: multiply;
+            transition: background 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        body.night-mode-active .night-light-overlay {
+            background: rgba(245, 158, 11, 0.22);
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-image: 
+                radial-gradient(at 10% 20%, rgba(99, 102, 241, 0.12) 0px, transparent 50%),
+                radial-gradient(at 90% 10%, rgba(168, 85, 247, 0.12) 0px, transparent 50%),
+                radial-gradient(at 50% 90%, rgba(6, 182, 212, 0.08) 0px, transparent 50%);
+            background-attachment: fixed;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Prevent background page scroll when Chapter Reader Modal is active */
+        body.reader-locked {
+            overflow: hidden !important;
+            height: 100vh !important;
+        }
+
+        /* Modern Glassmorphism & UI Accents */
+        .glass-panel {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--card-border);
+        }
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid var(--card-border);
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .glass-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(99, 102, 241, 0.45);
+            box-shadow: 0 20px 35px -10px rgba(99, 102, 241, 0.18);
+        }
+
+        /* Typing Cursor */
+        .cursor-blink {
+            display: inline-block;
+            width: 3px;
+            background-color: #6366f1;
+            margin-left: 4px;
+            animation: blink 0.85s infinite cubic-bezier(1, 0, 0, 1);
+        }
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        /* Custom Scrollbar for Notes Reader Scroll Container */
+        .notes-scroll-area::-webkit-scrollbar {
+            width: 7px;
+        }
+        .notes-scroll-area::-webkit-scrollbar-track {
+            background: rgba(148, 163, 184, 0.1);
+            border-radius: 8px;
+        }
+        .notes-scroll-area::-webkit-scrollbar-thumb {
+            background: rgba(99, 102, 241, 0.4);
+            border-radius: 8px;
+        }
+        .notes-scroll-area::-webkit-scrollbar-thumb:hover {
+            background: rgba(99, 102, 241, 0.7);
+        }
+
+        /* Reader Modal transitions */
+        .modal-overlay {
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .reader-container {
+            transform: translateY(24px) scale(0.97);
+            transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .modal-overlay.active .reader-container {
+            transform: translateY(0) scale(1);
+        }
+
+        /* Decorative & Note Layout Styles */
+        .note-highlight-box {
+            border-left: 4px solid #6366f1;
+            background: rgba(99, 102, 241, 0.07);
+        }
+        .formula-card {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(168, 85, 247, 0.05));
+            border: 1px dashed rgba(99, 102, 241, 0.35);
+        }
+        .badge-pill {
+            font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-indigo-500 selection:text-white">
+
+    <!-- Eye-Care Night Light Study Mode Tint Overlay -->
+    <div class="night-light-overlay"></div>
+
+    <!-- Top Navigation Header -->
+    <header class="sticky top-0 z-40 glass-panel border-b border-slate-200/80 dark:border-slate-800/80 transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
+            
+            <!-- Logo Branding -->
+            <a href="#" class="flex items-center gap-3 group focus:outline-none">
+                <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-indigo-600 via-purple-600 to-cyan-400 flex items-center justify-center text-white shadow-lg shadow-indigo-500/25 group-hover:scale-105 transition-transform duration-300">
+                    <i class="fa-solid fa-graduation-cap text-xl"></i>
+                </div>
+                <div>
+                    <div class="flex items-baseline gap-1">
+                        <span class="font-heading font-extrabold text-2xl tracking-tight bg-gradient-to-r from-indigo-600 via-purple-600 to-cyan-500 dark:from-indigo-400 dark:via-purple-400 dark:to-cyan-300 bg-clip-text text-transparent">NCERT Notes</span>
+                        <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
+                    </div>
+                    <span class="text-[10px] font-bold tracking-widest text-slate-400 dark:text-slate-500 uppercase block -mt-1">Make Study Better</span>
+                </div>
+            </a>
+
+            <!-- Quick Search Bar -->
+            <div class="flex-1 max-w-md mx-2 hidden md:block relative">
+                <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                <input 
+                    type="text" 
+                    id="globalSearch"
+                    placeholder="Search chapter, formula or topic (e.g. Electric Charges, Force, Redox)..." 
+                    class="w-full pl-11 pr-4 py-2 text-sm rounded-full bg-slate-100/90 dark:bg-slate-800/90 border border-slate-200/80 dark:border-slate-700/80 text-slate-800 dark:text-slate-200 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all shadow-inner"
+                />
+            </div>
+
+            <!-- Action Tools: Night Light & Light/Dark Theme Switchers -->
+            <div class="flex items-center gap-3">
+                <!-- Night Light Mode (Dim Amber Eye Protection for long night studying) -->
+                <button 
+                    id="nightLightBtn" 
+                    title="Toggle Amber Eye-Care Night Light"
+                    class="relative px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 border border-amber-300/60 dark:border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-300 hover:bg-amber-500/20 active:scale-95 transition-all"
+                >
+                    <i class="fa-solid fa-fire-flame-curved text-amber-500 animate-pulse"></i>
+                    <span class="hidden sm:inline" id="nightLightStatus">Night Light: Off</span>
+                </button>
+
+                <!-- Light / Dark Mode Toggle -->
+                <button 
+                    id="themeToggleBtn" 
+                    title="Switch Theme"
+                    class="w-11 h-11 rounded-xl glass-card flex items-center justify-center text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-indigo-400 focus:outline-none transition-all active:scale-95"
+                >
+                    <i class="fa-solid fa-moon text-lg dark:hidden"></i>
+                    <i class="fa-solid fa-sun text-lg hidden dark:inline text-amber-400"></i>
+                </button>
+            </div>
+
+        </div>
+    </header>
+
+    <!-- Hero Section with Dynamic Typing Animation -->
+    <section class="relative pt-12 pb-10 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center overflow-hidden">
+        
+        <!-- Subtle Top Badge -->
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200/80 dark:border-indigo-800/80 text-indigo-700 dark:text-indigo-300 text-xs font-semibold uppercase tracking-wider mb-6 shadow-sm">
+            <i class="fa-solid fa-sparkles text-indigo-500"></i>
+            CBSE & State Boards • 2024-2025 Syllabus Updated
+        </div>
+
+        <!-- Headline with REQUIRED Typing Animation -->
+        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-heading font-black tracking-tight text-slate-900 dark:text-white leading-tight min-h-[110px] sm:min-h-[130px] flex items-center justify-center flex-wrap">
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-purple-600 to-cyan-500 dark:from-indigo-400 dark:via-purple-400 dark:to-cyan-300" id="typingTarget">Ncert Notes...</span><span class="cursor-blink h-9 sm:h-12 w-1 sm:w-1.5"></span>
+        </h1>
+
+        <p class="max-w-2xl mx-auto text-base sm:text-lg text-slate-600 dark:text-slate-400 mt-2 font-normal leading-relaxed">
+            Concise, colorful, diagram-rich chapter revision notes, cheat-sheets, formulas, and NCERT exemplars crafted to help students score 95%+ in board exams.
+        </p>
+
+        <!-- Stats / Feature Pills -->
+        <div class="flex flex-wrap justify-center items-center gap-4 sm:gap-8 mt-8 text-xs font-semibold text-slate-500 dark:text-slate-400">
+            <span class="flex items-center gap-1.5"><i class="fa-solid fa-bolt text-indigo-500"></i> 100% Free Instant Access</span>
+            <span class="flex items-center gap-1.5"><i class="fa-solid fa-file-pdf text-rose-500"></i> Printable One-Click PDFs</span>
+            <span class="flex items-center gap-1.5"><i class="fa-solid fa-award text-amber-500"></i> Toppers & Faculty Reviewed</span>
+        </div>
+    </section>
+
+    <!-- Main Content Area: Class Distinctions & Subject Tabs -->
+    <main class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20 w-full">
+        
+        <!-- Class Selector Tabs (Class 9 to Class 12) -->
+        <div class="flex items-center justify-center mb-8">
+            <div class="inline-flex p-1.5 rounded-2xl glass-panel shadow-lg gap-1.5 sm:gap-2 overflow-x-auto max-w-full">
+                <button onclick="switchClass('12')" id="tab-12" class="class-tab-btn px-5 py-2.5 rounded-xl font-heading font-bold text-sm sm:text-base transition-all bg-indigo-600 text-white shadow-md shadow-indigo-500/30">
+                    <i class="fa-solid fa-graduation-cap mr-1.5 text-xs"></i> Class 12
+                </button>
+                <button onclick="switchClass('11')" id="tab-11" class="class-tab-btn px-5 py-2.5 rounded-xl font-heading font-bold text-sm sm:text-base transition-all text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400">
+                    <i class="fa-solid fa-book-bookmark mr-1.5 text-xs"></i> Class 11
+                </button>
+                <button onclick="switchClass('10')" id="tab-10" class="class-tab-btn px-5 py-2.5 rounded-xl font-heading font-bold text-sm sm:text-base transition-all text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400">
+                    <i class="fa-solid fa-atom mr-1.5 text-xs"></i> Class 10
+                </button>
+                <button onclick="switchClass('9')" id="tab-9" class="class-tab-btn px-5 py-2.5 rounded-xl font-heading font-bold text-sm sm:text-base transition-all text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400">
+                    <i class="fa-solid fa-shapes mr-1.5 text-xs"></i> Class 9
+                </button>
+            </div>
+        </div>
+
+        <!-- Subject Filter Buttons & Search Indicators -->
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8">
+            <div id="subjectPillsContainer" class="flex flex-wrap items-center gap-2 justify-center sm:justify-start">
+                <!-- Subject Pills dynamic injection -->
+            </div>
+
+            <div class="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                Showing <span id="chapterCountBadge" class="font-bold text-indigo-600 dark:text-indigo-400">12</span> Chapters
+            </div>
+        </div>
+
+        <!-- Chapters Cards Grid Container -->
+        <div id="chaptersGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Dynamically populated chapters cards -->
+        </div>
+
+        <!-- Empty Search Result State -->
+        <div id="noResultsState" class="hidden text-center py-16">
+            <div class="w-16 h-16 mx-auto rounded-full bg-indigo-50 dark:bg-indigo-950 flex items-center justify-center text-indigo-500 text-2xl mb-4">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </div>
+            <h3 class="text-lg font-bold text-slate-800 dark:text-slate-200">No matching chapters found</h3>
+            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Try searching for keywords like "Electric", "Force", "Acid", "Calculus" or switch classes.</p>
+        </div>
+
+    </main>
+
+    <!-- ========================================================================= -->
+    <!-- IN-PAGE CHAPTER NOTES READER MODAL (The page will NOT scroll; notes scroll)-->
+    <!-- ========================================================================= -->
+    <div id="notesReaderOverlay" class="modal-overlay fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 md:p-6 bg-slate-950/70 backdrop-blur-md">
+        
+        <div class="reader-container w-full max-w-5xl h-[92vh] max-h-[900px] rounded-3xl glass-panel shadow-2xl flex flex-col overflow-hidden border border-slate-200/90 dark:border-slate-700/80 bg-white/95 dark:bg-slate-900/95 transition-all">
+            
+            <!-- TOP BAR OF THE READER WITH METADATA & PDF DOWNLOAD BUTTON -->
+            <div class="p-4 sm:px-6 border-b border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3 bg-slate-50/80 dark:bg-slate-900/80 backdrop-blur-sm shrink-0">
+                
+                <!-- Chapter title & breadcrumb -->
+                <div class="flex items-center gap-3">
+                    <div id="readerSubjectIcon" class="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold text-lg shadow-md shadow-indigo-500/20">
+                        <i class="fa-solid fa-book-open"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span id="readerClassBadge" class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300">Class 12</span>
+                            <span id="readerSubjectBadge" class="text-[10px] font-bold uppercase text-slate-400">Physics</span>
+                        </div>
+                        <h2 id="readerChapterTitle" class="text-base sm:text-lg font-heading font-bold text-slate-900 dark:text-white truncate max-w-[260px] sm:max-w-md">
+                            Electric Charges and Fields
+                        </h2>
+                    </div>
+                </div>
+
+                <!-- Action Controls: Direct PDF Download & Close Modal -->
+                <div class="flex items-center gap-2.5">
+                    
+                    <!-- REQUIRED: DIRECT PDF DOWNLOAD BUTTON ABOVE NOTES -->
+                    <button 
+                        id="downloadPdfBtn" 
+                        onclick="downloadNotesPDF()" 
+                        class="px-4 py-2 rounded-xl bg-gradient-to-r from-rose-500 via-pink-600 to-rose-600 hover:from-rose-600 hover:to-pink-700 text-white font-semibold text-xs sm:text-sm flex items-center gap-2 shadow-lg shadow-rose-500/25 active:scale-95 transition-all"
+                        title="Download these chapter revision notes as PDF"
+                    >
+                        <i class="fa-solid fa-file-arrow-down text-sm"></i>
+                        <span>Download PDF</span>
+                    </button>
+
+                    <!-- Font size zoom controls -->
+                    <div class="hidden sm:flex items-center rounded-xl bg-slate-200/60 dark:bg-slate-800/80 p-1 text-xs">
+                        <button onclick="changeFontSize(-1)" class="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-white dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300" title="Decrease font size">A-</button>
+                        <button onclick="changeFontSize(1)" class="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-white dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 font-bold" title="Increase font size">A+</button>
+                    </div>
+
+                    <!-- Close Reader Button -->
+                    <button 
+                        onclick="closeReader()" 
+                        class="w-10 h-10 rounded-xl bg-slate-200/70 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 hover:bg-rose-500 hover:text-white dark:hover:bg-rose-600 flex items-center justify-center transition-all"
+                        title="Close Reader"
+                    >
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
+                </div>
+
+            </div>
+
+            <!-- SCROLLABLE NOTES CONTENT CONTAINER (Scrolls inside here, outer page remains fixed) -->
+            <div id="notesScrollContainer" class="notes-scroll-area flex-1 overflow-y-auto p-4 sm:p-8 md:p-10 space-y-8 text-slate-700 dark:text-slate-300 leading-relaxed font-body">
+                
+                <!-- PDF Printable Wrapper Area -->
+                <div id="pdfPrintableArea" class="space-y-8">
+                    <!-- Dynamic Notes Content inserted here via JS -->
+                </div>
+
+            </div>
+
+            <!-- Sticky Bottom Quick Navigation Bar inside Reader -->
+            <div class="p-3 px-6 border-t border-slate-200 dark:border-slate-800 bg-slate-50/90 dark:bg-slate-900/90 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 shrink-0">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-circle-info text-indigo-500"></i>
+                    <span>Tip: Use <b>Ctrl + P</b> or Click <b>Download PDF</b> above to save locally.</span>
+                </div>
+                <button onclick="scrollToTopReader()" class="hover:text-indigo-600 dark:hover:text-indigo-400 font-semibold flex items-center gap-1">
+                    <i class="fa-solid fa-arrow-up"></i> Back to Top
+                </button>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="mt-auto glass-panel border-t border-slate-200 dark:border-slate-800/80 py-8 text-center text-xs text-slate-500 dark:text-slate-400">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-2 font-bold font-heading text-slate-700 dark:text-slate-300">
+                <i class="fa-solid fa-book-open-reader text-indigo-500"></i>
+                NCERT Notes — Designed for Board Exam Toppers
+            </div>
+            <div>
+                Built for Classes 9, 10, 11, and 12 • Free Education Initiative
+            </div>
+        </div>
+    </footer>
+
+    <!-- ========================================================================= -->
+    <!-- JAVASCRIPT: CONTENT DATABASE & INTERACTIVITY LOGIC -->
+    <!-- ========================================================================= -->
+    <script>
+        // --- 1. NCERT CHAPTERS DATABASE (Classes 9, 10, 11, 12) ---
+        const NCERT_DATABASE = [
+            // ================= CLASS 12 =================
+            {
+                id: "c12-phy-1",
+                class: "12",
+                subject: "Physics",
+                subjectCode: "phy",
+                chapterNum: "Chapter 1",
+                title: "Electric Charges and Fields",
+                readTime: "12 min read",
+                summary: "Coulomb's Law, Electric Dipole, Gauss's Theorem and its extensive electrostatic applications.",
+                badge: "High Weightage",
+                badgeColor: "rose",
+                notes: `
+                    <div class="space-y-6">
+                        <div class="p-4 rounded-2xl note-highlight-box">
+                            <h3 class="font-heading font-bold text-lg text-indigo-600 dark:text-indigo-400 mb-1">Chapter Overview & Blueprint</h3>
+                            <p class="text-sm">Electric charge is the fundamental intrinsic property of matter. Like charges repel, unlike charges attract. This chapter covers electric flux, dipole dynamics, and Gauss's law with 100% board-oriented derivations.</p>
+                        </div>
+
+                        <div>
+                            <h4 class="text-xl font-heading font-bold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
+                                <i class="fa-solid fa-cube text-indigo-500 text-base"></i> 1. Fundamental Properties of Charge
+                            </h4>
+                            <ul class="list-disc pl-5 space-y-2 text-sm sm:text-base">
+                                <li><strong>Quantization of Charge:</strong> Total charge on a body is an integral multiple of elementary charge: <code class="font-code text-indigo-600 dark:text-indigo-400 font-bold">q = ±ne</code> where $e = 1.6 \times 10^{-19}\text{ C}$.</li>
+                                <li><strong>Conservation of Charge:</strong> The total electric charge of an isolated system remains constant in any physical process.</li>
+                                <li><strong>Additivity of Charge:</strong> Total charge is the algebraic sum of individual point charges.</li>
+                            </ul>
+                        </div>
+
+                        <div class="p-5 rounded-2xl formula-card">
+                            <h4 class="font-heading font-bold text-base text-purple-700 dark:text-purple-300 mb-2 flex items-center gap-2">
+                                <i class="fa-solid fa-square-root-variable"></i> Key Formula: Coulomb's Law in Vector Form
+                            </h4>
+                            <p class="font-code text-sm font-semibold text-slate-900 dark:text-white mb-1">
+                                F = (1 / 4πε₀) · (|q₁ · q₂| / r²)
+                            </p>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Where ε₀ = 8.854 × 10⁻¹² C² N⁻¹ m⁻² (Permittivity of free space), 1/4πε₀ = 9 × 10⁹ N m² C⁻².</p>
+                        </div>
+
+                        <div>
+                            <h4 class="text-xl font-heading font-bold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
+                                <i class="fa-solid fa-bolt text-indigo-500 text-base"></i> 2. Gauss's Law & Important Applications
+                            </h4>
+                            <p class="text-sm sm:text-base mb-3">
+                                Gauss's law states that total electric flux passing through a closed Gaussian surface is equal to $1/\varepsilon_0$ times the total net charge enclosed:
+                            </p>
+                            <div class="p-3 bg-slate-100 dark:bg-slate-800 rounded-xl font-code text-sm text-center font-bold">
+                                Φ_E = ∮ E · dA = q_enclosed / ε₀
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4 text-xs sm:text-sm">
+                                <div class="p-3 rounded-xl border border-slate-200 dark:border-slate-700">
+                                    <strong>Infinitely Long Straight Wire:</strong>
+                                    <p class="font-code mt-1 text-indigo-600 dark:text-indigo-400">E = λ / (2πε₀r)</p>
+                                </div>
+                                <div class="p-3 rounded-xl border border-slate-200 dark:border-slate-700">
+                                    <strong>Uniformly Charged Infinite Plane Sheet:</strong>
+                                    <p class="font-code mt-1 text-indigo-600 dark:text-indigo-400">E = σ / (2ε₀)</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-xs sm:text-sm text-amber-900 dark:text-amber-200">
+                            <strong>⭐ Board Exam Master Tip:</strong>
+                            Always draw neat Gaussian cylinders/spheres and show the angle between the electric field vector $\vec{E}$ and the surface area vector $d\vec{A}$.
+                        </div>
+                    </div>
+                `
+            },
+            {
+                id: "c12-phy-2",
+                class: "12",
+                subject: "Physics",
+                subjectCode: "phy",
+                chapterNum: "Chapter 2",
+                title: "Electrostatic Potential & Capacitance",
+                readTime: "14 min read",
+                summary: "Equipotential surfaces, dipole potential, parallel plate capacitors & dielectrics.",
+                badge: "Board Essential",
+                badgeColor: "indigo",
+                notes: `
+                    <div class="space-y-6">
+                        <div class="p-4 rounded-2xl note-highlight-box">
+                            <h3 class="font-heading font-bold text-lg text-indigo-600 dark:text-indigo-400 mb-1">Key Revision Pointers</h3>
+                            <p class="text-sm">Electric potential is the work done per unit positive charge in bringing it from infinity to that point. Work is path-independent for conservative electrostatic forces.</p>
+                        </div>
+                        <div class="p-4 rounded-xl formula-card">
+                            <h4 class="font-bold text-sm mb-2 text-indigo-600 dark:text-indigo-400">Capacitance with Dielectric Slab:</h4>
+                            <p class="font-code font-bold">C = (K · ε₀ · A) / d</p>
+                            <p class="text-xs text-slate-500 mt-1">Energy stored in capacitor: U = ½ CV² = ½ Q²/C = ½ QV</p>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                id: "c12-chem-1",
+                class: "12",
+                subject: "Chemistry",
+                subjectCode: "chem",
+                chapterNum: "Chapter 1",
+                title: "Solutions & Colligative Properties",
+                readTime: "10 min read",
+                summary: "Raoult's Law, Henry's Law, Elevation in Boiling Point, Osmotic Pressure and Van't Hoff Factor.",
+                badge: "Numerical Heavy",
+                badgeColor: "cyan",
+                notes: `
+                    <div class="space-y-6">
+                        <div class="p-4 rounded-2xl note-highlight-box">
+                            <h3 class="font-heading font-bold text-lg text-indigo-600 dark:text-indigo-400 mb-1">Colligative Properties Summary</h3>
+                            <p class="text-sm">Properties that depend only on the number of solute particles in solution, irrespective of their chemical nature.</p>
+                        </div>
+                        <ul class="space-y-3 text-sm">
+                            <li><strong>1. Relative Lowering of Vapour Pressure:</strong> (P° - P)/P° = x_solute</li>
+                            <li><strong>2. Elevation in Boiling Point:</strong> ΔTb = i · Kb · m</li>
+                            <li><strong>3. Depression in Freezing Point:</strong> ΔTf = i · Kf · m</li>
+                            <li><strong>4. Osmotic Pressure:</strong> π = i · C · R · T</li>
+                        </ul>
+                    </div>
+                `
+            },
+            {
+                id: "c12-chem-2",
+                class: "12",
+                subject: "Chemistry",
+                subjectCode: "chem",
+                chapterNum: "Chapter 2",
+                title: "Electrochemistry & Nernst Equation",
+                readTime: "15 min read",
+                summary: "Galvanic cells, Standard Hydrogen Electrode, Nernst equation, Kohlrausch Law & Batteries.",
+                badge: "Top Priority",
+                badgeColor: "rose",
+                notes: `
+                    <div class="space-y-6">
+                        <div class="p-4 rounded-2xl formula-card">
+                            <h4 class="font-bold text-sm mb-2 text-indigo-600 dark:text-indigo-400">Nernst Equation at 298 K:</h4>
+                            <p class="font-code font-bold text-slate-900 dark:text-white">E_cell = E°_cell - (0.0591 / n) · log₁₀([Anode] / [Cathode])</p>
+                        </div>
+                        <div class="p-4 rounded-2xl note-highlight-box text-sm">
+                            <strong>Kohlrausch's Law:</strong> The limiting molar conductivity of an electrolyte can be represented as the sum of individual contributions of anion and cation.
+                        </div>
+                    </div>
+                `
+            },
+            {
+                id: "c12-bio-1",
+                class: "12",
+                subject: "Biology",
+                subjectCode: "bio",
+                chapterNum: "Chapter 1",
+                title: "Sexual Reproduction in Flowering Plants",
+                readTime: "11 min read",
+                summary: "Microsporogenesis, Megasporogenesis, Double Fertilization, Endosperm & Apomixis.",
+                badge: "Diagrams Key",
+                badgeColor: "emerald",
+                notes: `
+                    <div class="space-y-6">
+                        <div class="p-4 rounded-2xl note-highlight-box">
+                            <h3 class="font-heading font-bold text-lg text-emerald-600 dark:text-emerald-400 mb-1">Double Fertilization Concept</h3>
+                            <p class="text-sm">Syngamy (1 sperm + egg cell = diploid Zygote) + Triple Fusion (1 sperm + 2 polar nuclei = triploid Primary Endosperm Nucleus / PEN).</p>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                id: "c12-math-1",
+                class: "12",
+                subject: "Mathematics",
+                subjectCode: "math",
+                chapterNum: "Chapter 5",
+                title: "Continuity and Differentiability",
+                readTime: "16 min read",
+                summary: "Limits continuity, Chain rule, Implicit differentiation, Logarithmic differentiation & Mean Value Theorem.",
+                badge: "High Scoring",
+                badgeColor: "indigo",
+                notes: `
+                    <div class="space-y-6">
+                        <div class="p-4 rounded-2xl note-highlight-box">
+                            <h3 class="font-heading font-bold text-lg text-indigo-600 dark:text-indigo-400 mb-1">Conditions for Continuity</h3>
+                            <p class="text-sm">A function f(x) is continuous at x = a if: <code>lim (x→a⁻) f(x) = lim (x→a⁺) f(x) = f(a)</code>.</p>
+                        </div>
+                    </div>
+                `
+            },
+
+            // ================= CLASS 11 =================
+            {
+                id: "c11-phy-1",
+                class: "11",
+                subject: "Physics",
+                subjectCode: "phy",
+                chapterNum: "Chapter 4",
+                title: "Laws of Motion & Friction",
+                readTime: "13 min read",
+                summary: "Newton's three laws, Inertia, Free body diagrams, Momentum conservation, and Banking of roads.",
+                badge: "Foundation",
+                badgeColor: "indigo",
+                notes: `
+                    <div class="space-y-6">
+                        <div class="p-4 rounded-2xl note-highlight-box">
+                            <h3 class="font-heading font-bold text-lg text-indigo-600 dark:text-indigo-400 mb-1">Core Laws Breakdown</h3>
+                            <p class="text-sm">Newton's 2nd law defines force: <code>F = dp/dt = ma</code>. Momentum is conserved in the absence of external force.</p>
+                        </div>
+                        <div class="p-4 rounded-2xl formula-card">
+                            <h4 class="font-bold text-sm mb-1 text-purple-600">Optimum Banking Velocity:</h4>
+                            <p class="font-code font-bold">v = √(r · g · tan θ)</p>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                id: "c11-chem-1",
+                class: "11",
+                subject: "Chemistry",
+                subjectCode: "chem",
+                chapterNum: "Chapter 4",
+                title: "Chemical Bonding & Molecular Structure",
+                readTime: "14 min read",
+                summary: "VSEPR theory, Hybridization (sp, sp2, sp3, sp3d), MOT, Dipole moment and Hydrogen bonding.",
+                badge: "Must Master",
+                badgeColor: "rose",
+                notes: `
+                    <div class="space-y-6">
+                        <div class="p-4 rounded-2xl note-highlight-box">
+                            <h3 class="font-heading font-bold text-lg text-indigo-600 dark:text-indigo-400 mb-1">VSEPR & Hybridization</h3>
+                            <p class="text-sm">Repulsion order: Lone Pair-Lone Pair > Lone Pair-Bond Pair > Bond Pair-Bond Pair. Determines actual bond angles.</p>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                id: "c11-bio-1",
+                class: "11",
+                subject: "Biology",
+                subjectCode: "bio",
+                chapterNum: "Chapter 8",
+                title: "Cell: The Unit of Life",
+                readTime: "10 min read",
+                summary: "Prokaryotic vs Eukaryotic cells, Fluid mosaic model of membrane, Endomembrane system, Organelles.",
+                badge: "Essential",
+                badgeColor: "emerald",
+                notes: `
+                    <div class="space-y-6">
+                        <div class="p-4 rounded-2xl note-highlight-box">
+                            <h3 class="font-heading font-bold text-lg text-emerald-600 dark:text-emerald-400 mb-1">Fluid Mosaic Model (1972)</h3>
+                            <p class="text-sm">Proposed by Singer and Nicolson. Describes quasi-fluid nature of lipids allowing lateral movement of proteins.</p>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                id: "c11-math-1",
+                class: "11",
+                subject: "Mathematics",
+                subjectCode: "math",
+                chapterNum: "Chapter 3",
+                title: "Trigonometric Functions",
+                readTime: "12 min read",
+                summary: "Compound angles, Multiple angle identities, Trigonometric equations, Domain & Range.",
+                badge: "Formula Sheet",
+                badgeColor: "indigo",
+                notes: `
+                    <div class="space-y-6">
+                        <div class="p-4 rounded-2xl formula-card">
+                            <h4 class="font-bold text-sm mb-1 text-indigo-600">Standard Identities:</h4>
+                            <p class="font-code text-sm">sin(A ± B) = sinA cosB ± cosA sinB</p>
+                            <p class="font-code text-sm">cos(A + B) = cosA cosB - sinA sinB</p>
+                        </div>
+                    </div>
+                `
+            },
+
+            // ================= CLASS 10 =================
+            {
+                id: "c10-sci-1",
+                class: "10",
+                subject: "Science",
+                subjectCode: "sci",
+                chapterNum: "Chapter 1",
+                title: "Chemical Reactions and Equations",
+                readTime: "9 min read",
+                summary: "Balancing equations, Types of reactions (Combination, Decomposition, Displacement, Redox), Corrosion & Rancidity.",
+                badge: "High Scoring",
+                badgeColor: "rose",
+                notes: `
+                    <div class="space-y-6">
+                        <div class="p-4 rounded-2xl note-highlight-box">
+                            <h3 class="font-heading font-bold text-lg text-indigo-600 dark:text-indigo-400 mb-1">Types of Chemical Reactions</h3>
+                            <p class="text-sm">Combination, Decomposition (Thermal/Photolytic/Electrolytic), Displacement, Double displacement, and Redox reactions.</p>
+                        </div>
+                        <div class="p-4 rounded-xl bg-slate-100 dark:bg-slate-800 text-sm space-y-2">
+                            <p><strong>Redox Reaction:</strong> Oxidation is gain of oxygen / loss of electrons. Reduction is loss of oxygen / gain of electrons.</p>
+                            <p class="font-code text-indigo-600 dark:text-indigo-400">CuO + H₂ ⎯(Heat)⎯> Cu + H₂O</p>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                id: "c10-sci-2",
+                class: "10",
+                subject: "Science",
+                subjectCode: "sci",
+                chapterNum: "Chapter 10",
+                title: "Light: Reflection and Refraction",
+                readTime: "14 min read",
+                summary: "Mirror formula, Lens formula, Magnification, Sign conventions, Ray diagrams, Snell's Law & Power of lens.",
+                badge: "Diagrams & Numericals",
+                badgeColor: "indigo",
+                notes: `
+                    <div class="space-y-6">
+                        <div class="p-4 rounded-2xl formula-card">
+                            <h4 class="font-bold text-sm mb-2 text-indigo-600">Mirror & Lens Master Equations:</h4>
+                            <p class="font-code text-sm">Mirror: 1/f = 1/v + 1/u &nbsp;|&nbsp; m = -v/u = h'/h</p>
+                            <p class="font-code text-sm mt-1">Lens: 1/f = 1/v - 1/u &nbsp;|&nbsp; m = +v/u = h'/h</p>
+                            <p class="text-xs text-slate-500 mt-2">Power of lens: P = 1 / f (in metres), measured in Dioptres (D).</p>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                id: "c10-math-1",
+                class: "10",
+                subject: "Mathematics",
+                subjectCode: "math",
+                chapterNum: "Chapter 4",
+                title: "Quadratic Equations",
+                readTime: "8 min read",
+                summary: "Standard form ax² + bx + c = 0, Factorization method, Quadratic formula, Nature of roots (Discriminant D).",
+                badge: "Board Must",
+                badgeColor: "cyan",
+                notes: `
+                    <div class="space-y-6">
+                        <div class="p-4 rounded-2xl formula-card">
+                            <h4 class="font-bold text-sm mb-1 text-purple-600">Quadratic Formula & Discriminant:</h4>
+                            <p class="font-code font-bold">x = [-b ± √(b² - 4ac)] / 2a</p>
+                            <p class="text-xs text-slate-500 mt-1">D = b² - 4ac. If D > 0 (2 distinct real roots), D = 0 (2 equal real roots), D < 0 (no real roots).</p>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                id: "c10-sst-1",
+                class: "10",
+                subject: "Social Science",
+                subjectCode: "sst",
+                chapterNum: "History Ch 1",
+                title: "The Rise of Nationalism in Europe",
+                readTime: "11 min read",
+                summary: "Frederic Sorrieu painting, French Revolution, Napoleon's Civil Code 1804, Italian & German Unification.",
+                badge: "Theory Essential",
+                badgeColor: "amber",
+                notes: `
+                    <div class="space-y-6">
+                        <div class="p-4 rounded-2xl note-highlight-box">
+                            <h3 class="font-heading font-bold text-lg text-amber-600 dark:text-amber-400 mb-1">Civil Code of 1804 (Napoleonic Code)</h3>
+                            <ul class="list-disc pl-5 text-sm space-y-1 mt-2">
+                                <li>Did away with all privileges based on birth.</li>
+                                <li>Established equality before the law.</li>
+                                <li>Secured the right to property and simplified administrative divisions.</li>
+                            </ul>
+                        </div>
+                    </div>
+                `
+            },
+
+            // ================= CLASS 9 =================
+            {
+                id: "c9-sci-1",
+                class: "9",
+                subject: "Science",
+                subjectCode: "sci",
+                chapterNum: "Chapter 8",
+                title: "Motion & Equations of Motion",
+                readTime: "10 min read",
+                summary: "Distance vs Displacement, Speed, Velocity, Acceleration, Graphical derivations of 3 equations of motion.",
+                badge: "Core Physics",
+                badgeColor: "indigo",
+                notes: `
+                    <div class="space-y-6">
+                        <div class="p-4 rounded-2xl formula-card">
+                            <h4 class="font-bold text-sm mb-2 text-indigo-600">The 3 Equations of Uniform Acceleration:</h4>
+                            <p class="font-code text-sm">1. v = u + at</p>
+                            <p class="font-code text-sm">2. s = ut + ½ at²</p>
+                            <p class="font-code text-sm">3. v² = u² + 2as</p>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                id: "c9-sci-2",
+                class: "9",
+                subject: "Science",
+                subjectCode: "sci",
+                chapterNum: "Chapter 5",
+                title: "The Fundamental Unit of Life",
+                readTime: "9 min read",
+                summary: "Cell discovery, Robert Hooke, Plasma membrane, Osmosis, Hypotonic/Isotonic solutions, Nucleus & Organelles.",
+                badge: "Core Biology",
+                badgeColor: "emerald",
+                notes: `
+                    <div class="space-y-6">
+                        <div class="p-4 rounded-2xl note-highlight-box">
+                            <h3 class="font-heading font-bold text-lg text-emerald-600 dark:text-emerald-400 mb-1">Key Organelle Functions</h3>
+                            <ul class="list-disc pl-5 text-sm space-y-1">
+                                <li><strong>Mitochondria:</strong> Powerhouse of the cell (Generates ATP).</li>
+                                <li><strong>Lysosomes:</strong> Suicide bags (Hydrolytic digestive enzymes).</li>
+                                <li><strong>Ribosomes:</strong> Sites of protein synthesis.</li>
+                            </ul>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                id: "c9-math-1",
+                class: "9",
+                subject: "Mathematics",
+                subjectCode: "math",
+                chapterNum: "Chapter 1",
+                title: "Number Systems",
+                readTime: "8 min read",
+                summary: "Rational & Irrational numbers, Real numbers on number line, Rationalizing the denominator, Laws of exponents.",
+                badge: "Foundational",
+                badgeColor: "cyan",
+                notes: `
+                    <div class="space-y-6">
+                        <div class="p-4 rounded-2xl formula-card">
+                            <h4 class="font-bold text-sm mb-1 text-purple-600">Rationalization Principle:</h4>
+                            <p class="text-sm">Multiply numerator and denominator by conjugate pair: <code>1 / (√a + √b) = (√a - √b) / (a - b)</code>.</p>
+                        </div>
+                    </div>
+                `
+            }
+        ];
+
+        // --- 2. GLOBAL STATE ---
+        let currentClass = "12";
+        let currentSubjectFilter = "all";
+        let activeChapterObj = null;
+        let fontSizeLevel = 0; // -1, 0, 1, 2
+
+        // --- 3. TYPING ANIMATION (REQUIRED FEATURE) ---
+        // Loops through text variations starting with "Ncert Notes..."
+        const typingPhrases = [
+            "Ncert Notes... Make study better.",
+            "Ncert Notes... Master Class 9 to 12.",
+            "Ncert Notes... Fast revision with PDFs.",
+            "Ncert Notes... Score 95%+ in Boards."
+        ];
+        let phraseIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+        const typingSpeed = 90;
+        const deletingSpeed = 45;
+        const delayBetweenPhrases = 2200;
+        const typingTarget = document.getElementById("typingTarget");
+
+        function typeLoop() {
+            const currentText = typingPhrases[phraseIndex];
+            
+            if (isDeleting) {
+                charIndex--;
+                typingTarget.textContent = currentText.substring(0, charIndex);
+            } else {
+                charIndex++;
+                typingTarget.textContent = currentText.substring(0, charIndex);
+            }
+
+            let nextTimeout = isDeleting ? deletingSpeed : typingSpeed;
+
+            if (!isDeleting && charIndex === currentText.length) {
+                isDeleting = true;
+                nextTimeout = delayBetweenPhrases;
+            } else if (isDeleting && charIndex === 0) {
+                isDeleting = false;
+                phraseIndex = (phraseIndex + 1) % typingPhrases.length;
+                nextTimeout = 400;
+            }
+
+            setTimeout(typeLoop, nextTimeout);
+        }
+
+        // --- 4. NIGHT LIGHT STUDY MODE TOGGLE (Eye-Care Amber Tint) ---
+        const nightLightBtn = document.getElementById("nightLightBtn");
+        const nightLightStatus = document.getElementById("nightLightStatus");
+        let isNightLightOn = false;
+
+        nightLightBtn.addEventListener("click", () => {
+            isNightLightOn = !isNightLightOn;
+            document.body.classList.toggle("night-mode-active", isNightLightOn);
+            nightLightStatus.textContent = isNightLightOn ? "Night Light: ON (Warm)" : "Night Light: Off";
+            nightLightBtn.classList.toggle("bg-amber-500/30", isNightLightOn);
+        });
+
+        // --- 5. LIGHT / DARK THEME TOGGLE ---
+        const themeToggleBtn = document.getElementById("themeToggleBtn");
+        
+        // Initialize Theme from localStorage or system preference
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+
+        themeToggleBtn.addEventListener("click", () => {
+            if (document.documentElement.classList.contains("dark")) {
+                document.documentElement.classList.remove("dark");
+                localStorage.theme = 'light';
+            } else {
+                document.documentElement.classList.add("dark");
+                localStorage.theme = 'dark';
+            }
+        });
+
+        // --- 6. SUBJECTS & CLASS NAVIGATION ---
+        function getSubjectsForClass(cls) {
+            const chapters = NCERT_DATABASE.filter(c => c.class === cls);
+            const subjects = Array.from(new Set(chapters.map(c => c.subject)));
+            return subjects;
+        }
+
+        function renderSubjectPills() {
+            const container = document.getElementById("subjectPillsContainer");
+            const subjects = getSubjectsForClass(currentClass);
+            
+            let html = `
+                <button onclick="filterSubject('all')" class="subject-pill px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all ${currentSubjectFilter === 'all' ? 'bg-indigo-600 text-white shadow-sm' : 'bg-slate-200/70 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-700'}">
+                    All Subjects
+                </button>
+            `;
+
+            subjects.forEach(sub => {
+                const isActive = currentSubjectFilter === sub;
+                html += `
+                    <button onclick="filterSubject('${sub}')" class="subject-pill px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all ${isActive ? 'bg-indigo-600 text-white shadow-sm' : 'bg-slate-200/70 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-700'}">
+                        ${sub}
+                    </button>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function switchClass(cls) {
+            currentClass = cls;
+            currentSubjectFilter = "all";
+
+            // Update tab styles
+            document.querySelectorAll(".class-tab-btn").forEach(btn => {
+                btn.className = "class-tab-btn px-5 py-2.5 rounded-xl font-heading font-bold text-sm sm:text-base transition-all text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400";
+            });
+            const activeTab = document.getElementById(`tab-${cls}`);
+            if (activeTab) {
+                activeTab.className = "class-tab-btn px-5 py-2.5 rounded-xl font-heading font-bold text-sm sm:text-base transition-all bg-indigo-600 text-white shadow-md shadow-indigo-500/30";
+            }
+
+            renderSubjectPills();
+            renderChaptersGrid();
+        }
+
+        function filterSubject(sub) {
+            currentSubjectFilter = sub;
+            renderSubjectPills();
+            renderChaptersGrid();
+        }
+
+        // --- 7. CHAPTERS GRID RENDERING ---
+        function renderChaptersGrid() {
+            const grid = document.getElementById("chaptersGrid");
+            const noResults = document.getElementById("noResultsState");
+            const countBadge = document.getElementById("chapterCountBadge");
+            const searchKeyword = document.getElementById("globalSearch").value.trim().toLowerCase();
+
+            let filtered = NCERT_DATABASE.filter(item => item.class === currentClass);
+
+            if (currentSubjectFilter !== "all") {
+                filtered = filtered.filter(item => item.subject === currentSubjectFilter);
+            }
+
+            if (searchKeyword.length > 0) {
+                filtered = NCERT_DATABASE.filter(item => 
+                    item.title.toLowerCase().includes(searchKeyword) ||
+                    item.subject.toLowerCase().includes(searchKeyword) ||
+                    item.summary.toLowerCase().includes(searchKeyword) ||
+                    item.chapterNum.toLowerCase().includes(searchKeyword)
+                );
+            }
+
+            countBadge.textContent = filtered.length;
+
+            if (filtered.length === 0) {
+                grid.innerHTML = "";
+                noResults.classList.remove("hidden");
+                return;
+            }
+
+            noResults.classList.add("hidden");
+
+            grid.innerHTML = filtered.map(ch => {
+                // Color badges helper
+                let badgeStyle = "bg-indigo-100 text-indigo-700 dark:bg-indigo-950/80 dark:text-indigo-300";
+                if (ch.badgeColor === "rose") badgeStyle = "bg-rose-100 text-rose-700 dark:bg-rose-950/80 dark:text-rose-300";
+                if (ch.badgeColor === "cyan") badgeStyle = "bg-cyan-100 text-cyan-700 dark:bg-cyan-950/80 dark:text-cyan-300";
+                if (ch.badgeColor === "emerald") badgeStyle = "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/80 dark:text-emerald-300";
+                if (ch.badgeColor === "amber") badgeStyle = "bg-amber-100 text-amber-700 dark:bg-amber-950/80 dark:text-amber-300";
+
+                return `
+                    <div class="glass-card rounded-2xl p-6 flex flex-col justify-between border border-slate-200/80 dark:border-slate-800 transition-all group hover:shadow-xl">
+                        <div>
+                            <!-- Header metadata -->
+                            <div class="flex items-center justify-between gap-2 mb-3">
+                                <span class="text-xs font-extrabold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 font-heading">
+                                    Class ${ch.class} • ${ch.subject}
+                                </span>
+                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold ${badgeStyle}">
+                                    ${ch.badge}
+                                </span>
+                            </div>
+
+                            <span class="text-xs font-semibold text-slate-400 block mb-1">${ch.chapterNum}</span>
+                            <h3 class="text-lg font-heading font-bold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors line-clamp-1 mb-2">
+                                ${ch.title}
+                            </h3>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 mb-4 leading-relaxed">
+                                ${ch.summary}
+                            </p>
+                        </div>
+
+                        <div class="pt-4 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between mt-2">
+                            <span class="text-xs text-slate-400 flex items-center gap-1.5 font-medium">
+                                <i class="fa-regular fa-clock text-slate-400"></i> ${ch.readTime}
+                            </span>
+                            <button 
+                                onclick="openChapterReader('${ch.id}')" 
+                                class="px-4 py-2 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-600 text-indigo-600 dark:text-indigo-300 hover:text-white text-xs font-bold transition-all flex items-center gap-1.5 group-hover:bg-indigo-600 group-hover:text-white"
+                            >
+                                <span>Read Notes</span>
+                                <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join("");
+        }
+
+        // Live Search Input Listener
+        document.getElementById("globalSearch").addEventListener("input", () => {
+            renderChaptersGrid();
+        });
+
+        // --- 8. IN-PAGE NOTES READER (WITH LOCKED PAGE SCROLL) ---
+        const readerOverlay = document.getElementById("notesReaderOverlay");
+        const notesScrollContainer = document.getElementById("notesScrollContainer");
+
+        function openChapterReader(chapterId) {
+            const ch = NCERT_DATABASE.find(item => item.id === chapterId);
+            if (!ch) return;
+
+            activeChapterObj = ch;
+
+            // Populate Metadata
+            document.getElementById("readerClassBadge").textContent = `Class ${ch.class}`;
+            document.getElementById("readerSubjectBadge").textContent = ch.subject;
+            document.getElementById("readerChapterTitle").textContent = `${ch.chapterNum}: ${ch.title}`;
+
+            // Populate Notes Content
+            const printableArea = document.getElementById("pdfPrintableArea");
+            printableArea.innerHTML = `
+                <!-- Reader Banner inside Document -->
+                <div class="p-6 rounded-2xl bg-gradient-to-r from-indigo-600/10 via-purple-600/10 to-cyan-500/10 border border-indigo-200 dark:border-indigo-800/60 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <div class="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">NCERT Chapter Comprehensive Notes</div>
+                        <h1 class="text-2xl sm:text-3xl font-heading font-extrabold text-slate-900 dark:text-white mt-1">${ch.title}</h1>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">${ch.chapterNum} • Class ${ch.class} ${ch.subject} • High Priority Revision</p>
+                    </div>
+                    <div class="shrink-0 flex items-center gap-2">
+                        <span class="px-3 py-1 rounded-full text-xs font-bold bg-indigo-600 text-white shadow-sm">Verified 2025</span>
+                    </div>
+                </div>
+
+                <!-- Main Content Body -->
+                ${ch.notes}
+            `;
+
+            // 1. Lock the outer page body from scrolling (REQUIRED REQUIREMENT)
+            document.body.classList.add("reader-locked");
+
+            // 2. Open Modal Overlay
+            readerOverlay.classList.add("active");
+            notesScrollContainer.scrollTop = 0;
+        }
+
+        function closeReader() {
+            readerOverlay.classList.remove("active");
+            // Unlock body scrolling
+            document.body.classList.remove("reader-locked");
+            activeChapterObj = null;
+        }
+
+        // Close reader on backdrop click or ESC key
+        readerOverlay.addEventListener("click", (e) => {
+            if (e.target === readerOverlay) {
+                closeReader();
+            }
+        });
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "Escape" && readerOverlay.classList.contains("active")) {
+                closeReader();
+            }
+        });
+
+        function scrollToTopReader() {
+            notesScrollContainer.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function changeFontSize(delta) {
+            fontSizeLevel = Math.max(-1, Math.min(2, fontSizeLevel + delta));
+            const sizes = ['text-sm', 'text-base', 'text-lg', 'text-xl'];
+            notesScrollContainer.className = `notes-scroll-area flex-1 overflow-y-auto p-4 sm:p-8 md:p-10 space-y-8 text-slate-700 dark:text-slate-300 leading-relaxed font-body ${sizes[fontSizeLevel + 1]}`;
+        }
+
+        // --- 9. DIRECT PDF DOWNLOAD (SMALL BUTTON ABOVE NOTES) ---
+        function downloadNotesPDF() {
+            if (!activeChapterObj) return;
+
+            const btn = document.getElementById("downloadPdfBtn");
+            const originalContent = btn.innerHTML;
+
+            // Show downloading state
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-sm"></i> <span>Generating PDF...</span>`;
+            btn.disabled = true;
+
+            const element = document.getElementById("pdfPrintableArea");
+
+            // Configure html2canvas / jsPDF options
+            const opt = {
+                scale: 2,
+                useCORS: true,
+                backgroundColor: document.documentElement.classList.contains('dark') ? '#0f172a' : '#ffffff'
+            };
+
+            html2canvas(element, opt).then(canvas => {
+                const imgData = canvas.toDataURL('image/png');
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                const imgWidth = 210; 
+                const pageHeight = 295;  
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                let heightLeft = imgHeight;
+                let position = 0;
+
+                pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                heightLeft -= pageHeight;
+
+                while (heightLeft >= 0) {
+                    position = heightLeft - imgHeight;
+                    pdf.addPage();
+                    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                    heightLeft -= pageHeight;
+                }
+
+                const filename = `NCERT_Notes_Class${activeChapterObj.class}_${activeChapterObj.title.replace(/\s+/g, '_')}.pdf`;
+                pdf.save(filename);
+
+                // Restore button state
+                btn.innerHTML = originalContent;
+                btn.disabled = false;
+            }).catch(err => {
+                console.error("PDF generation failed, fallback to print view:", err);
+                // Fallback: Trigger standard browser print for notes area
+                window.print();
+                btn.innerHTML = originalContent;
+                btn.disabled = false;
+            });
+        }
+
+        // --- 10. INITIALIZATION ---
+        window.addEventListener("DOMContentLoaded", () => {
+            typeLoop();
+            switchClass("12");
+        });
+    </script>
+</body>
+</html>
